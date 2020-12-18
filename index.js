@@ -9,16 +9,16 @@ module.exports = function FixLaggyFriendsList(mod) {
     mod.hook('C_UPDATE_FRIEND_INFO', 'raw', event => {
         // prevent the client from sending multiple requests within a short time.
         if (requestTimeout) {
-            mod.send('S_UPDATE_FRIEND_INFO', 1,  {friends: []});
+            mod.send('S_UPDATE_FRIEND_INFO', 2,  {friends: []});
             return false;
         }
         requestTimeout = mod.setTimeout(()=>{ requestTimeout = undefined; }, 200);
         // refresh the UI with the accumulated Update data.
-        if (friendInfo) mod.send('S_UPDATE_FRIEND_INFO', 1, friendInfo);
+        if (friendInfo) mod.send('S_UPDATE_FRIEND_INFO', 2, friendInfo);
         friendInfo = undefined;
     });
 
-    mod.hook('S_UPDATE_FRIEND_INFO', 1, event => {
+    mod.hook('S_UPDATE_FRIEND_INFO', 2, event => {
         // Store and grow the Update data until the client requests it.
         if (friendInfo == undefined) {
             friendInfo = event;
